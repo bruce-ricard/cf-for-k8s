@@ -15,6 +15,7 @@ fluent:
   port: 24224
 
 internal_service_hostname: #@ "capi.{}.svc.cluster.local".format(data.values.system_namespace)
+internal_service_port: 80
 
 pid_filename: /cloud_controller_ng/cloud_controller_ng.pid
 newrelic_enabled: false
@@ -129,7 +130,6 @@ uaa:
   internal_url: #@ "http://uaa.{}.svc.cluster.local:8080".format(data.values.system_namespace)
   resource_id: cloud_controller,cloud_controller_service_permissions
   client_timeout: 60
-  ca_file: /config/uaa/certs/uaa.crt
 
 routing_api:
   url: #@ "https://api.{}/routing".format(data.values.system_domain)
@@ -192,13 +192,14 @@ packages:
     path_style: true
   max_valid_packages_stored: 5
   max_package_size: 1073741824
-
-  cdn:
-    uri:
-    key_pair_id:
-    private_key: ""
-
   fog_aws_storage_options: {}
+  image_registry: {
+    base_path: #@ data.values.kpack.registry.repository_prefix
+  }
+
+package_image_uploader:
+  host: 127.0.0.1
+  port: 8080
 
 droplets:
   droplet_directory_key: #@ data.values.blobstore.droplet_directory_key
@@ -266,7 +267,7 @@ cc_service_key_client_secret: TODO
 allow_app_ssh_access: true
 default_app_ssh_access: true
 
-skip_cert_verify: true
+skip_cert_verify: false
 
 install_buildpacks: []
 

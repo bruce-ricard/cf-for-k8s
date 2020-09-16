@@ -1,8 +1,8 @@
 #@ load("@ytt:data", "data")
 
 ---
-apiVersion: experimental.kpack.pivotal.io/v1alpha1
-kind: Store
+apiVersion: kpack.io/v1alpha1
+kind: ClusterStore
 metadata:
   name: cf-buildpack-store
 spec:
@@ -17,8 +17,8 @@ spec:
   - image: gcr.io/paketo-buildpacks/procfile@sha256:e9f731b4cd3f8a13f2f70295713b0ef0970e02e03a530be467bf25703ee5e086
 
 ---
-apiVersion: experimental.kpack.pivotal.io/v1alpha1
-kind: Stack
+apiVersion: kpack.io/v1alpha1
+kind: ClusterStack
 metadata:
   name: cflinuxfs3-stack
 spec:
@@ -29,16 +29,20 @@ spec:
     image: "gcr.io/paketo-buildpacks/run@sha256:84f7b60192e69036cb363b2fc7d9834cff69dcbcf7aaf8c058d986fdee6941c3"
 
 ---
-apiVersion: experimental.kpack.pivotal.io/v1alpha1
-kind: CustomBuilder
+apiVersion: kpack.io/v1alpha1
+kind: Builder
 metadata:
   name: cf-default-builder
   namespace: #@ data.values.staging_namespace
 spec:
   tag: #@ "{}/cf-default-builder".format(data.values.app_registry.repository_prefix)
   serviceAccount: cc-kpack-registry-service-account
-  stack: cflinuxfs3-stack
-  store: cf-buildpack-store
+  stack:
+    name: cflinuxfs3-stack
+    kind: ClusterStack
+  store:
+    name: cf-buildpack-store
+    kind: ClusterStore
   order:
   - group:
     - id: paketo-community/ruby

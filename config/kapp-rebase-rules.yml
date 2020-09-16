@@ -18,4 +18,4 @@ rebaseRules:
   - apiVersionKindMatcher:
       apiVersion: admissionregistration.k8s.io/v1beta1
       kind: MutatingWebhookConfiguration
-      name: resource.webhook.kpack.pivotal.io
+      name: defaults.webhook.kpack.io
